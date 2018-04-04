@@ -1,0 +1,33 @@
+version: '3.3'
+
+volumes:
+  rabbitmq:
+
+networks:
+  rabbitmq:
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.7.4-management
+    command: bash -c "rabbitmq-plugins enable rabbitmq_peer_discovery_consul && /docker-entrypoint.sh rabbitmq-server"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "A6988329-4845-4C1D-A67E-413DA178C4E2"
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit cluster_formation.peer_discovery_backend = rabbit_peer_discovery_consul
+    hostname: "{{ .Node.Hostname }}"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    ports:
+      - published: 4369
+        target: 4369
+        mode: host
+      - published: 5672
+        target: 5672
+        mode: host
+      - published: 15672
+        target: 15672
+        mode: host
+      - published: 25672
+        target: 25672
+        mode: host
+    networks:
+      rabbitmq:
